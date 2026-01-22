@@ -92,87 +92,40 @@ button{
 
 <script>
 const QUESTIONS = [
-  {
-    question:"Jika 3/4 dari suatu bilangan adalah 18, berapakah 2/3 dari bilangan tersebut?",
-    options:["8","12","16","18"],
-    correct:2,
-    rationale:[
-      "Numerik – pecahan",
-      "Menentukan bilangan asal",
-      "Cari nilai penuh dulu",
-      "A,B,D salah; C konsisten",
-      "Kesalahan umum: lupa invers",
-      "Paham pecahan = yakin",
-      "Bilangan = 24 → 2/3 × 24 = 16"
-    ]
-  }
+{
+ question:"Nilai x memenuhi: (2/3)x + 4 = 10. Berapakah x?",
+ options:["6","9","12","18"],
+ correct:1,
+ rationale:[
+  "Numerik – aljabar linear",
+  "Menyusun ulang persamaan",
+  "Peserta mengisolasi variabel",
+  "A terlalu cepat, B benar, C,D overkill",
+  "Kesalahan umum: kali silang tanpa urut",
+  "Jika sistematis, yakin",
+  "2/3 x = 6 → x = 9"
+ ]
+},
+{
+ question:"Jika semua A adalah B, dan sebagian B adalah C, maka:",
+ options:[
+  "Semua A adalah C",
+  "Sebagian A adalah C",
+  "Tidak dapat disimpulkan",
+  "Tidak ada A yang C"
+ ],
+ correct:2,
+ rationale:[
+  "Logika kuantor",
+  "Menguji relasi himpunan",
+  "Peserta tergoda transitif palsu",
+  "A,B,D jebakan, C tepat",
+  "Kesalahan: asumsi distribusi",
+  "Logika himpunan = presisi",
+  "Tidak ada informasi cukup"
+ ]
+}
 ];
-
-let idx=0, locked=false, time=6, timer;
-
-load();
-start();
-
-function load(){
-  locked=false;
-  time=6;
-  document.getElementById("timer").innerText="⏱ "+time;
-  document.getElementById("question").innerText=QUESTIONS[idx].question;
-
-  const o=document.getElementById("options");
-  o.innerHTML="";
-  QUESTIONS[idx].options.forEach((t,i)=>{
-    const d=document.createElement("div");
-    d.className="option";
-    d.innerText=t;
-    d.onclick=()=>pick(i,d);
-    o.appendChild(d);
-  });
-
-  document.getElementById("rationale").style.display="none";
-}
-
-function pick(i,el){
-  if(locked) return;
-  locked=true;
-  clearInterval(timer);
-
-  document.querySelectorAll(".option").forEach((o,n)=>{
-    if(n===QUESTIONS[idx].correct) o.classList.add("correct");
-    else if(n===i) o.classList.add("wrong");
-  });
-
-  setTimeout(showRationale,500);
-}
-
-function start(){
-  clearInterval(timer);
-  timer=setInterval(()=>{
-    time--;
-    document.getElementById("timer").innerText="⏱ "+time;
-    if(time<=0){
-      clearInterval(timer);
-      showRationale();
-    }
-  },1000);
-}
-
-function showRationale(){
-  const r=document.getElementById("rationale");
-  const q=QUESTIONS[idx].rationale;
-  r.innerHTML=`
-<b>7-Step Rationale Engine</b><br><br>
-1. Domain: ${q[0]}<br>
-2. Competence: ${q[1]}<br>
-3. Reasoning: ${q[2]}<br>
-4. Options: ${q[3]}<br>
-5. Meta Audit: ${q[4]}<br>
-6. Confidence: ${q[5]}<br>
-7. Insight: ${q[6]}<br>
-<button onclick="load();start()">Replay</button>
-`;
-  r.style.display="block";
-}
 </script>
 
 </body>
