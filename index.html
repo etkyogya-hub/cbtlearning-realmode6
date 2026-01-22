@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REAL MODE — 3D ENGINE</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:Inter,system-ui,Arial,sans-serif;
+  color:#fff;
+}
+
+/* CAMERA */
+#camera{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:1200px;
+}
+
+/* PHONE BODY */
+#phone{
+  width:390px;
+  height:780px;
+  transform-style:preserve-3d;
+  animation:camMove 6s ease-in-out infinite;
+}
+
+/* SHELL */
+#shell{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,#111,#050505);
+  border-radius:42px;
+  box-shadow:
+    0 40px 120px rgba(0,0,0,.9),
+    inset 0 0 0 2px #222;
+  transform:translateZ(-18px);
+}
+
+/* SCREEN PLANE */
+#screen{
+  position:absolute;
+  inset:16px;
+  background:#0e0e0e;
+  border-radius:28px;
+  padding:18px 16px;
+  transform:translateZ(12px);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* CONTENT */
+#timer{
+  font-size:13px;
+  color:#7ff;
+  text-align:right;
+}
+
+#hook{
+  font-size:19px;
+  font-weight:700;
+  color:#ff5;
+  text-align:center;
+  animation:pulse 1.1s infinite;
+}
+
+#question{
+  font-size:20px;
+  font-weight:600;
+  line-height:1.35;
+}
+
+#options{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.opt{
+  padding:14px;
+  background:#1b1b1b;
+  border-radius:14px;
+  border:1px solid #333;
+  font-size:15px;
+}
+
+.correct{background:#0b3;border-color:#0f0}
+.wrong{background:#500;border-color:#f00}
+
+#rationale{
+  display:none;
+  font-size:13px;
+  line-height:1.45;
+  color:#ccc;
+}
+
+/* MOTION */
+@keyframes camMove{
+  0%{transform:rotateX(0deg) rotateY(0deg)}
+  25%{transform:rotateX(2deg) rotateY(-3deg)}
+  50%{transform:rotateX(-2deg) rotateY(3deg)}
+  75%{transform:rotateX(1deg) rotateY(-2deg)}
+  100%{transform:rotateX(0deg) rotateY(0deg)}
+}
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.04)}
+  100%{transform:scale(1)}
+}
+</style>
+</head>
+
+<body>
+<div id="camera">
+  <div id="phone">
+    <div id="shell"></div>
+    <div id="screen">
+      <div id="timer">⏱ 6</div>
+      <div id="hook">JANGAN LANGSUNG JAWAB</div>
+      <div id="question"></div>
+      <div id="options"></div>
+      <div id="rationale"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA=[
+{
+ q:"3/4 dari suatu bilangan adalah 18. Berapa 2/3 bilangan itu?",
+ o:["8","12","16","18"],
+ c:2,
+ r:"Bilangan awal = 24. 2/3 × 24 = 16."
+},
+{
+ q:"Jika P → Q dan Q salah, kesimpulan logis?",
+ o:["P benar","P salah","Tidak pasti","Q benar"],
+ c:1,
+ r:"Modus tollens. Q salah memaksa P salah."
+}
+];
+
+let i=0,t=6,lock=false,int=null;
+const Q=question,O=options,R=rationale,T=timer,H=hook;
+
+load(); start();
+
+function load(){
+ lock=false; t=6; upd();
+ const d=DATA[i];
+ Q.textContent=d.q;
+ O.innerHTML="";
+ R.style.display="none";
+ H.style.display="block";
+ d.o.forEach((x,k)=>{
+  const e=document.createElement("div");
+  e.className="opt";
+  e.textContent=x;
+  e.onclick=()=>pick(k);
+  O.appendChild(e);
+ });
+}
+
+function pick(k){
+ if(lock)return;
+ lock=true; clearInterval(int);
+ const d=DATA[i];
+ [...O.children].forEach((e,j)=>{
+  if(j===d.c)e.classList.add("correct");
+  else if(j===k)e.classList.add("wrong");
+ });
+ setTimeout(()=>show(d),600);
+}
+
+function show(d){
+ H.style.display="none";
+ R.textContent=d.r;
+ R.style.display="block";
+ setTimeout(next,1200);
+}
+
+function next(){
+ i++;
+ if(i>=DATA.length){
+  Q.textContent="STOP. LANJUT ATAU ULANG.";
+  O.innerHTML="";
+  return;
+ }
+ load(); start();
+}
+
+function start(){
+ clearInterval(int);
+ int=setInterval(()=>{
+  t--; upd();
+  if(t<=0){clearInterval(int); auto();}
+ },1000);
+}
+
+function auto(){
+ if(lock)return;
+ lock=true;
+ const d=DATA[i];
+ O.children[d.c].classList.add("correct");
+ setTimeout(()=>show(d),600);
+}
+
+function upd(){T.textContent="⏱ "+t}
+</script>
+</body>
+</html>
